@@ -1,6 +1,7 @@
 
 const db = require("../models");
 const {response:Resp} = require("../contract/response");
+
 const { product: Product, user: User } = db;
 // current timestamp in milliseconds
 let ts = Date.now();
@@ -8,21 +9,36 @@ let ts = Date.now();
 let date_ob = new Date(ts);
 let date = date_ob.getDate();
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 25;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
 
   exports.products = (req, res) => {
-    Product.find().limit(100)
-    .exec(async (err, product) => {
-        if (err) {
-            res.status(500).send(new Resp(false,err,null));
-            return;
-          }
-    
-          if (!product) {
-            return res.status(200).send(new Resp(false,"Product Not found.",null));
-          }
-        var m = new Resp(true,"Products found.",product);
+    const {page, size, keyword} = req.query;
+
+    var condition = keyword != null && keyword != 'undefined'
+    ? { Keyword: { $regex: new RegExp(keyword), $options: "i" } }
+    : {};
+
+  const { limit, offset } = getPagination(page, size);
+    Product.paginate(condition, { offset, limit })
+      .then((data) => {
+        var payload = {
+          totalItems: data.totalDocs,
+          records: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+        }
+        var m = new Resp(true, "Products found.", payload);
         res.status(200).send(m);
+      }).catch((err) => {
+        res.status(500).send(new Resp(false, err.message, null));
       });
+   
   };
   exports.productById = (req, res) => {
       Product.findById(req.params.id)

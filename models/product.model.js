@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2'); 
 
 const Product = mongoose.model(
   "Product",
@@ -12,7 +13,8 @@ const Product = mongoose.model(
     ModifiedBy: String,
     Modified: Date,
     IsActive: Boolean,
-  })
+  }).plugin(mongoosePaginate)
 );
 
 module.exports = Product;
+
