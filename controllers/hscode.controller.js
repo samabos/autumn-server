@@ -1,25 +1,41 @@
 
 const db = require("../models");
 const {response : Resp} = require("../contract/response");
-const {runCompletion: MLModel} = require('../utilities/hscode.service');
+const {runCompletion: GPTMLModel} = require('../utilities/hscode.service');
+const {mlModelFastAPI: MLModelFastAPI} = require('../utilities/fastapi.service');
 const { hscode : HSCode, user : User } = db;
 // current timestamp in milliseconds
 let ts = Date.now();
 
 let date_ob = new Date(ts);
 let date = date_ob.getDate();
+let hsArr = [];
+let hsAccuracyArr = [];
+let hsCodeAccuracyArr = [];
+
+function getHSCodes(value, index, array) {
+  //console.log(value.hscode)
+  let hscode = value.hscode.trim();
+  const regex = /[^0-9]/ig;
+  hscode = hscode.replace(regex,'');
+  if(hscode.length > 4){
+    hscode = hscode.substring(0, 4)+"."+hscode.substr(4, 2);
+  }
+  hsArr.push(hscode);
+  hsAccuracyArr.push({"hscode":hscode,"accuracy":value.accuracy});
+}
+
+
 
 ///ML Model Search
 exports.hsAsk = async (req, res)=>{
-  await MLModel(req.body.keyword).then(
-    function(value) { 
-      let hscode = value.data.choices[0].text.trim();
-      const regex = /[^0-9]/ig;
-      hscode = hscode.replace(regex,'');
-      if(hscode.length > 4){
-        hscode = hscode.substring(0, 4)+"."+hscode.substr(4, 2);
-      }
-      HSCode.findOne({ Code: hscode})
+  hsArr = []; hsAccuracyArr = [];
+  MLModelFastAPI(req.body.keyword).then(
+    function(response) { 
+      
+      response.forEach(getHSCodes);
+
+      HSCode.find({ Code: {$in:hsArr}})
       .exec(async (err, hs) => {
           if (err) {
               return res.status(500).send(new Resp(false,err,null));
@@ -27,7 +43,7 @@ exports.hsAsk = async (req, res)=>{
           if (!hs) {
             return res.status(200).send(new Resp(false,"HS Code Not found.",null));
           }
-          res.status(200).send(new Resp(true,"HS Code found.",[hs]));
+          return res.status(200).send(new Resp(true,"HS Code found.",{"prediction":hsAccuracyArr,"hscode":hs}));
       });
       //var m = new Resp(true,"HS Code found.",value.data.choices[0].text);
       //res.status(200).send(m) 
@@ -35,6 +51,7 @@ exports.hsAsk = async (req, res)=>{
     function(error) {
       return res.status(500).send(new Resp(false,error,null))
     }
+
   );
 }
 
