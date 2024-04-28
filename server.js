@@ -16,8 +16,7 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-require("./routes/record"));
+//app.use(require("./routes/record"));
 require('./routes/auth.routes')(app);
 require('./routes/user.routes')(app);
 require('./routes/product.routes')(app);

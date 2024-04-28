@@ -25,7 +25,7 @@ module.exports = {
             useUnifiedTopology: true
         })
         .then(() => {
-            console.log("Successfully connect to MongoDB.");
+            console.log("Successfully connect to MongoDB Mongoose.");
             initial();
         })
         .catch(err => {
