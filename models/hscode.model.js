@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2'); 
 
 const HSCode = mongoose.model(
   "HSCode",
@@ -12,7 +13,7 @@ const HSCode = mongoose.model(
     ParentCode: String,
     Description: String,
     SelfExplanatory: String,
-  })
+  }).plugin(mongoosePaginate)
 );
 
 module.exports = HSCode;

@@ -1,13 +1,16 @@
 const express = require("express");
 const app = express();
-const cors = require("cors");
-require("dotenv").config({ path: "./config.env" });
 const port = process.env.PORT || 5000;
-
-var corsOptions = {
-  origin: "http://localhost:3000"
-};
+const cors = require("cors");
+const corsOptions ={
+    origin: '*', 
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
+}
 app.use(cors(corsOptions));
+
+require("dotenv").config({ path: "./config.env" });
+
 // parse requests of content-type - application/json
 app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
@@ -21,6 +24,7 @@ require('./routes/product.routes')(app);
 require('./routes/hscode.routes')(app);
 require('./routes/tarrif.routes')(app);
 require('./routes/regulation.routes')(app);
+require('./routes/currency.routes')(app);
 // simple route
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to autumn application." });
