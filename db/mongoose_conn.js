@@ -1,5 +1,5 @@
 
-const Db = process.env.ATLAS_URI;
+const Db = process.env.MONGODB_URI;
 const db = require("../models");
 const Role = db.role;
 

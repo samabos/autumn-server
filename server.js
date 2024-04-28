@@ -9,7 +9,7 @@ const corsOptions ={
 }
 app.use(cors(corsOptions));
 
-require("dotenv").config({ path: "./config.env" });
+require("dotenv").config({ path: "./.env.local" });
 
 // parse requests of content-type - application/json
 app.use(express.json());
