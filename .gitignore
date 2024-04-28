@@ -25,3 +25,6 @@ yarn-error.log*
 # Visual Studio 2015 cache/options directory
 .vs/
 .vercel
+
+#development
+config.env
