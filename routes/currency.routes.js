@@ -1,5 +1,5 @@
 const { authJwt } = require("../middlewares");
-const controller = require("../controllers/tarrif.controller");
+const controller = require("../controllers/currency.controller");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -10,8 +10,8 @@ module.exports = function(app) {
     next();
   });
 
-  app.get("/api/tarrif/:header", controller.tarrifByHeader);
-
-  app.get("/api/tarrif/code/:code", controller.tarrifByCode);
+  
+  app.get("/api/currency", controller.currency);
+  app.get("/api/currency/:code", controller.currencyByCode);
 
 }

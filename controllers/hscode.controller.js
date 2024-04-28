@@ -13,6 +13,14 @@ let hsArr = [];
 let hsAccuracyArr = [];
 let hsCodeAccuracyArr = [];
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 25;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
+
 function getHSCodes(value, index, array) {
   //console.log(value.hscode)
   let hscode = value.hscode.trim();
@@ -57,7 +65,7 @@ exports.hsAsk = async (req, res)=>{
 
 
 
-exports.hsCodes = (req, res) => {
+{/**exports.hsCodes = (req, res) => {
     HSCode.find().limit(100)
     .exec(async (err, hs) => {
         if (err) {
@@ -69,7 +77,32 @@ exports.hsCodes = (req, res) => {
         var m = new Resp(true,"HS Code found.",hs);
         res.status(200).send(m);
       });
+  }; */}
+
+  exports.hscodes = (req, res) => {
+    const {page, size, keyword} = req.query;
+
+    var condition = keyword != null && keyword != 'undefined'
+    ? { Code: { $regex: new RegExp(keyword), $options: "i" } }
+    : {};
+
+  const { limit, offset } = getPagination(page, size);
+   HSCode.paginate(condition, { offset, limit, sort: { _id: 1, Order: -1 } })
+      .then((data) => {
+        var payload = {
+          totalItems: data.totalDocs,
+          records: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+        }
+        var m = new Resp(true, "Records found.", payload);
+        res.status(200).send(m);
+      }).catch((err) => {
+        res.status(500).send(new Resp(false, err.message, null));
+      });
+   
   };
+
   exports.hsCodesById = (req, res) => {
     HSCode.findById(req.params.id)
         .exec(async (err, hs) => {

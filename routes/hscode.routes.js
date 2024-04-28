@@ -10,7 +10,7 @@ module.exports = function(app) {
     next();
   });
 
-  app.get("/api/hscode", [authJwt.verifyToken], controller.hsCodes);
+  app.get("/api/hscode", [authJwt.verifyToken], controller.hscodes);
   app.get("/api/hscode/:id", [authJwt.verifyToken], controller.hsCodesById);
   app.get("/api/hscode/keyword/:code", [authJwt.verifyToken], controller.hsCodesByCode);
   app.post("/api/hscode/search", [authJwt.verifyToken], controller.hsCodesByFilter);

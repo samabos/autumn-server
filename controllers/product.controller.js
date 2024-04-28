@@ -40,6 +40,8 @@ const getPagination = (page, size) => {
       });
    
   };
+
+
   exports.productById = (req, res) => {
       Product.findById(req.params.id)
         .exec(async (err, product) => {
@@ -104,7 +106,7 @@ const getPagination = (page, size) => {
     });
   };
   exports.productUpdate = (req, res) => {
-    User.findById(req.userId).exec((err, user) => 
+    Product.findById(req.userId).exec((err, user) => 
     {
       if (err) {
         return res.status(500).send(new Resp(false,err,null));
